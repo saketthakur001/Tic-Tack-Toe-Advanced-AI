@@ -73,8 +73,7 @@ class TicTacToe:
         return False
 
 def play(game, x_player, o_player, print_game=True):
-    if print_game:
-        game.print_board() # Call the updated print_board
+    
 
     letter = 'X'
     while game.empty_squares():
