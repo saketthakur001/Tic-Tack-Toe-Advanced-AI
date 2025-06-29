@@ -15,7 +15,7 @@ EPSILON_END = 0.01
 EPSILON_DECAY = 0.995
 BATCH_SIZE = 64
 BUFFER_SIZE = 10000
-NUM_EPISODES = 10000
+NUM_EPISODES = 50000
 
 class ReplayBuffer:
     def __init__(self, capacity):
