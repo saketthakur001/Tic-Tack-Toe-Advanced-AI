@@ -86,8 +86,9 @@ def play(game, x_player, o_player, print_game=True):
         if game.make_move(square, letter):
             if print_game:
                 print(letter + f' makes a move to square {square}')
-                game.print_board()
                 print('')
+            # Print board after each move, regardless of who made it
+            game.print_board()
 
             if game.current_winner:
                 if print_game:
