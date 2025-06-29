@@ -73,29 +73,48 @@ class TicTacToe:
         return False
 
 def play(game, x_player, o_player, print_game=True):
-    
+    if print_game:
+        game.print_board() # Initial board display
 
-    letter = 'X'
+    current_player_letter = 'X' # Human starts as X
+
     while game.empty_squares():
-        if letter == 'O':
-            square = o_player.get_move(game)
-        else:
+        # Human's turn
+        if current_player_letter == x_player.letter:
             square = x_player.get_move(game)
+            if game.make_move(square, x_player.letter):
+                if print_game:
+                    print(f"{x_player.letter} makes a move to square {square}")
+                if game.current_winner:
+                    if print_game:
+                        game.print_board() # Print final board
+                        print(f"{x_player.letter} wins!")
+                    return x_player.letter
+                current_player_letter = o_player.letter # Switch to AI
+            # If make_move returns False, HumanPlayer.get_move will re-prompt, so no else needed here.
 
-        if game.make_move(square, letter):
-            if print_game:
-                print(letter + f' makes a move to square {square}')
-            # Print board after each move, regardless of who made it
+        # AI's turn (only if game is not over and it's AI's turn)
+        if game.empty_squares() and not game.current_winner and current_player_letter == o_player.letter:
+            square = o_player.get_move(game)
+            if game.make_move(square, o_player.letter):
+                if print_game:
+                    print(f"{o_player.letter} makes a move to square {square}")
+                if game.current_winner:
+                    if print_game:
+                        game.print_board() # Print final board
+                        print(f"{o_player.letter} wins!")
+                    return o_player.letter
+                current_player_letter = x_player.letter # Switch back to Human
+
+        # Print board after both players (or one if game ends) have moved
+        if print_game and not game.current_winner and game.empty_squares():
             game.print_board()
 
-            if game.current_winner:
-                if print_game:
-                    print(letter + ' wins!')
-                return letter
-            letter = 'O' if letter == 'X' else 'X'
-
-    if print_game:
+    if print_game and not game.current_winner: # If loop ends and no winner, it's a tie
+        game.print_board() # Print final board for tie
         print('It\'s a tie!')
+    return None # Return None for tie or if game ends without a winner being explicitly returned
+
 
 class HumanPlayer:
     def __init__(self, letter):
