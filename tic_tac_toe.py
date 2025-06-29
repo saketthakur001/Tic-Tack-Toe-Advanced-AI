@@ -9,13 +9,16 @@ class TicTacToe:
         self.current_winner = None
 
     def print_board(self):
-        for row in [self.board[i*5:(i+1)*5] for i in range(5)]:
-            print('| ' + ' | '.join(row) + ' |')
-
-    @staticmethod
-    def print_board_nums():
-        number_board = [[str(i) for i in range(j*5+1, (j+1)*5+1)] for j in range(5)]
-        for row in number_board:
+        for r in range(5):
+            row = []
+            for c in range(5):
+                square_index = r * 5 + c
+                if self.board[square_index] == 'X':
+                    row.append('❌')
+                elif self.board[square_index] == 'O':
+                    row.append('⭕')
+                else:
+                    row.append(str(square_index + 1).rjust(2)) # Right-align numbers for consistent spacing
             print('| ' + ' | '.join(row) + ' |')
 
     def available_moves(self):
@@ -59,7 +62,7 @@ class TicTacToe:
 
 def play(game, x_player, o_player, print_game=True):
     if print_game:
-        game.print_board_nums()
+        game.print_board() # Call the updated print_board
 
     letter = 'X'
     while game.empty_squares():
