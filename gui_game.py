@@ -13,10 +13,10 @@ class TicTacToeGUI:
         self.game = TicTacToe()
         self.load_ai_model()
 
-        self.player_x = AIPlayer('X', self.ai_model)
-        self.player_o = HumanPlayer('O') # Human player for 'O'
+        self.player_x = HumanPlayer('X') # Human player for 'X'
+        self.player_o = AIPlayer('O', self.ai_model) # AI player for 'O'
 
-        self.current_player = self.player_x.letter # AI starts as 'X'
+        self.current_player = self.player_x.letter # Human 'X' starts
 
         self.buttons = {}
         self.create_board_buttons()
@@ -24,7 +24,7 @@ class TicTacToeGUI:
         self.create_reset_button()
 
         self.update_status()
-        self.master.after(100, self.ai_make_move_if_needed) # Start AI's turn if AI is X
+        # No initial AI move, human starts
 
     def load_ai_model(self):
         try:
@@ -69,8 +69,8 @@ class TicTacToeGUI:
         if self.game.current_winner or not self.game.empty_squares():
             return # Game is over
 
-        if self.current_player == self.player_o.letter: # Only human can make a move via click
-            if self.game.make_move(square_index, self.player_o.letter):
+        if self.current_player == self.player_x.letter: # Only human can make a move via click
+            if self.game.make_move(square_index, self.player_x.letter):
                 self.update_board_display()
                 if self.game.current_winner:
                     self.update_status()
@@ -79,7 +79,7 @@ class TicTacToeGUI:
                     self.update_status()
                     messagebox.showinfo("Game Over", "It's a tie!")
                 else:
-                    self.current_player = self.player_x.letter # Switch to AI's turn
+                    self.current_player = self.player_o.letter # Switch to AI's turn
                     self.update_status()
                     self.master.after(500, self.ai_make_move_if_needed) # Delay AI move for better UX
             else:
@@ -92,9 +92,9 @@ class TicTacToeGUI:
         if self.game.current_winner or not self.game.empty_squares():
             return # Game is over
 
-        if self.current_player == self.player_x.letter: # If it's AI's turn
-            ai_move = self.player_x.get_move(self.game)
-            if self.game.make_move(ai_move, self.player_x.letter):
+        if self.current_player == self.player_o.letter: # If it's AI's turn (O)
+            ai_move = self.player_o.get_move(self.game)
+            if self.game.make_move(ai_move, self.player_o.letter):
                 self.update_board_display()
                 if self.game.current_winner:
                     self.update_status()
@@ -103,15 +103,15 @@ class TicTacToeGUI:
                     self.update_status()
                     messagebox.showinfo("Game Over", "It's a tie!")
                 else:
-                    self.current_player = self.player_o.letter # Switch to Human's turn
+                    self.current_player = self.player_x.letter # Switch to Human's turn (X)
                     self.update_status()
 
     def reset_game(self):
         self.game = TicTacToe()
-        self.current_player = self.player_x.letter # AI starts as 'X'
+        self.current_player = self.player_x.letter # Human 'X' starts
         self.update_board_display()
         self.update_status()
-        self.master.after(100, self.ai_make_move_if_needed) # Start AI's turn if AI is X
+        # No initial AI move, human starts
 
 if __name__ == "__main__":
     root = tk.Tk()

@@ -39,25 +39,37 @@ class TicTacToe:
         return False
 
     def winner(self, square, letter):
-        # check row
+        # Check rows
         row_ind = square // 5
-        row = self.board[row_ind*5 : (row_ind + 1) * 5]
-        if all([s == letter for s in row]):
-            return True
-        # check column
+        row_start = row_ind * 5
+        for i in range(2): # Check for 4 in a row in a 5x5 grid
+            if all(self.board[row_start + j] == letter for j in range(i, i + 4)):
+                return True
+
+        # Check columns
         col_ind = square % 5
-        column = [self.board[col_ind + i*5] for i in range(5)]
-        if all([s == letter for s in column]):
-            return True
-        # check diagonals
-        if square % 6 == 0:
-            diagonal1 = [self.board[i] for i in [0, 6, 12, 18, 24]]
-            if all([s == letter for s in diagonal1]):
+        for i in range(2): # Check for 4 in a column in a 5x5 grid
+            if all(self.board[col_ind + j*5] == letter for j in range(i, i + 4)):
                 return True
-        if square % 4 == 0 and square != 0 and square != 24:
-            diagonal2 = [self.board[i] for i in [4, 8, 12, 16, 20]]
-            if all([s == letter for s in diagonal2]):
-                return True
+
+        # Check diagonals (top-left to bottom-right)
+        # Check if the square is part of any possible 4-in-a-row diagonal
+        for r_offset in range(-3, 1): # Iterate through possible starting rows for a 4-in-a-row diagonal
+            for c_offset in range(-3, 1): # Iterate through possible starting columns
+                start_row = row_ind + r_offset
+                start_col = col_ind + c_offset
+                if 0 <= start_row <= 1 and 0 <= start_col <= 1: # Ensure starting point is within 2x2 top-left subgrid
+                    if all(self.board[(start_row + k) * 5 + (start_col + k)] == letter for k in range(4)):
+                        return True
+
+        # Check diagonals (top-right to bottom-left)
+        for r_offset in range(-3, 1):
+            for c_offset in range(0, 4): # Iterate through possible starting columns
+                start_row = row_ind + r_offset
+                start_col = col_ind + c_offset
+                if 0 <= start_row <= 1 and 3 <= start_col <= 4: # Ensure starting point is within 2x2 top-right subgrid
+                    if all(self.board[(start_row + k) * 5 + (start_col - k)] == letter for k in range(4)):
+                        return True
         return False
 
 def play(game, x_player, o_player, print_game=True):
@@ -117,6 +129,6 @@ if __name__ == '__main__':
     model = TicTacToeNet()
     model.load_state_dict(torch.load('tictactoe_net.pth'))
     model.eval()
-    x_player = AIPlayer('X', model)
-    o_player = HumanPlayer('O')
+    x_player = HumanPlayer('X')
+    o_player = AIPlayer('O', model)
     play(t, x_player, o_player, print_game=True)
