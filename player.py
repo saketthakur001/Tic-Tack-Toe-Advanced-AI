@@ -1,6 +1,7 @@
-
 import torch
 import numpy as np
+
+from win_checker import check_winner
 
 class AIPlayer:
     def __init__(self, letter, model):
@@ -17,7 +18,7 @@ class AIPlayer:
         for move in available_moves:
             next_state = game.board[:]
             next_state[move] = self.letter
-            if self._check_winner(next_state, self.letter):
+            if check_winner(next_state, move, self.letter):
                 return move
 
         # Block opponent's winning moves
@@ -25,7 +26,7 @@ class AIPlayer:
         for move in available_moves:
             next_state = game.board[:]
             next_state[move] = opponent_letter
-            if self._check_winner(next_state, opponent_letter):
+            if check_winner(next_state, move, opponent_letter):
                 return move
 
         # Choose the best move from the model's output
@@ -46,19 +47,3 @@ class AIPlayer:
             else:
                 board_state.append(-1)
         return board_state
-
-    def _check_winner(self, board, letter):
-        # Check rows
-        for i in range(0, 25, 5):
-            if all(board[j] == letter for j in range(i, i + 5)):
-                return True
-        # Check columns
-        for i in range(5):
-            if all(board[j] == letter for j in range(i, 25, 5)):
-                return True
-        # Check diagonals
-        if all(board[i] == letter for i in [0, 6, 12, 18, 24]):
-            return True
-        if all(board[i] == letter for i in [4, 8, 12, 16, 20]):
-            return True
-        return False

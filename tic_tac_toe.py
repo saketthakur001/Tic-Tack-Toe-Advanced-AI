@@ -2,6 +2,7 @@ import random
 import torch
 from player import AIPlayer
 from model import TicTacToeNet
+from win_checker import check_winner
 
 class TicTacToe:
     def __init__(self):
@@ -39,38 +40,7 @@ class TicTacToe:
         return False
 
     def winner(self, square, letter):
-        # Check rows
-        row_ind = square // 5
-        row_start = row_ind * 5
-        for i in range(2): # Check for 4 in a row in a 5x5 grid
-            if all(self.board[row_start + j] == letter for j in range(i, i + 4)):
-                return True
-
-        # Check columns
-        col_ind = square % 5
-        for i in range(2): # Check for 4 in a column in a 5x5 grid
-            if all(self.board[col_ind + j*5] == letter for j in range(i, i + 4)):
-                return True
-
-        # Check diagonals (top-left to bottom-right)
-        # Check if the square is part of any possible 4-in-a-row diagonal
-        for r_offset in range(-3, 1): # Iterate through possible starting rows for a 4-in-a-row diagonal
-            for c_offset in range(-3, 1): # Iterate through possible starting columns
-                start_row = row_ind + r_offset
-                start_col = col_ind + c_offset
-                if 0 <= start_row <= 1 and 0 <= start_col <= 1: # Ensure starting point is within 2x2 top-left subgrid
-                    if all(self.board[(start_row + k) * 5 + (start_col + k)] == letter for k in range(4)):
-                        return True
-
-        # Check diagonals (top-right to bottom-left)
-        for r_offset in range(-3, 1):
-            for c_offset in range(0, 4): # Iterate through possible starting columns
-                start_row = row_ind + r_offset
-                start_col = col_ind + c_offset
-                if 0 <= start_row <= 1 and 3 <= start_col <= 4: # Ensure starting point is within 2x2 top-right subgrid
-                    if all(self.board[(start_row + k) * 5 + (start_col - k)] == letter for k in range(4)):
-                        return True
-        return False
+        return check_winner(self.board, square, letter)
 
 def play(game, x_player, o_player, print_game=True):
     if print_game:
